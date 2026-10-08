@@ -2,7 +2,7 @@
 
 Resumable: a file already on disk is skipped. Writes photos/index.json: project -> photos, with
 the original title, description and the size it came down at, so nothing is lost on the way."""
-import json, os, struct, subprocess, sys, time, urllib.request, urllib.error
+import json, os, struct, subprocess, sys, time, urllib.parse, urllib.request, urllib.error
 
 MANIFEST, OUT = sys.argv[1], sys.argv[2]
 SIZE_CODES = [16, 15, 14, 9]  # Houzz size codes, largest first; the first that answers wins
@@ -64,5 +64,23 @@ for proj in m['projects'].values():
         entry['photos'].append(rec)
     index.append(entry)
     print(f"{slug}: {len(entry['photos'])}", file=sys.stderr)
+# Photos outside any project (page header backgrounds) and the logos.
+extra = os.path.join(OUT, 'photos', '_site'); os.makedirs(extra, exist_ok=True)
+for ext_id, img in (m.get('extraImages') or {}).items():
+    f = os.path.join(extra, f'{ext_id}.jpg')
+    if not os.path.exists(f):
+        best = best_image(img)
+        if not best: failed.append(ext_id); continue
+        with open(f, 'wb') as fh: fh.write(best[1])
+header = ((m.get('site') or {}).get('sharedBlocks') or {}).get('header') or {}
+logos = {header.get('props', {}).get('src'),
+         'https://st.hzcdn.com/siteuploads/site_7600032/JD%20Logo%20square%20no%20phone.png_1671579302_12324.png'}
+for url in filter(None, logos):
+    name = urllib.parse.unquote(url.split('/')[-1].split('?')[0])
+    f = os.path.join(extra, name)
+    if not os.path.exists(f):
+        try:
+            with open(f, 'wb') as fh: fh.write(fetch(url.replace(' ', '%20')))
+        except Exception: failed.append(url)
 json.dump(index, open(os.path.join(OUT, 'photos', 'index.json'), 'w'), indent=1)
 print(f'done; {len(failed)} failed: {failed}', file=sys.stderr)

@@ -1,0 +1,12 @@
+{
+  "name": "jensen-design-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler pages dev --port 8788",
+    "deploy": "wrangler pages deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.40.0"
+  }
+}

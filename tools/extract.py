@@ -27,7 +27,19 @@ def find_projects(node, acc):
     elif isinstance(node, list):
         for v in node: find_projects(v, acc)
 
-manifest = {'base': BASE, 'pages': {}, 'projects': {}}
+def find_images(node, acc, where):
+    """Section backgrounds and other photos that sit outside any project."""
+    if isinstance(node, dict):
+        photo = (node.get('props') or {}).get('source')
+        if isinstance(photo, dict) and isinstance(photo.get('photo'), dict):
+            img = photo['photo'].get('image') or {}
+            if img.get('externalId'):
+                acc[img['externalId']] = dict(img, title=photo['photo'].get('title'), usedOn=where)
+        for v in node.values(): find_images(v, acc, where)
+    elif isinstance(node, list):
+        for v in node: find_images(v, acc, where)
+
+manifest = {'base': BASE, 'pages': {}, 'projects': {}, 'bindings': {}, 'extraImages': {}}
 first = next_data(get(''))
 pp = first['props']['pageProps']
 sd = json.loads(pp['siteDataJson'])
@@ -47,6 +59,10 @@ for path in paths:
     p = d['props']['pageProps']
     s = json.loads(p['siteDataJson'])
     manifest['pages'][path or '/'] = {'head': json.loads(p['headContent']), 'tree': s['currentPage']}
+    # Bound content (about text, reviews, contact) is not in the page tree; keep it by its binding type.
+    for key, value in (s.get('bindingData') or {}).items():
+        manifest['bindings'][json.loads(key)['type']] = value
+    find_images(s['currentPage'], manifest['extraImages'], path or '/')
     acc = {}
     find_projects(s['currentPage'], acc)
     for pid, proj in acc.items():

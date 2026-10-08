@@ -1,0 +1,69 @@
+{
+ "name": "Jensen Design",
+ "legalName": "Jensen Design, LLC.",
+ "contact": {
+  "email": "jdesign@rmi.net",
+  "formattedPhone": "(970) 249-9877",
+  "formattedAddress": "1835 Launa Dr, Montrose, CO 81401"
+ },
+ "mapAddress": "1835 Launa Dr, Montrose, Colorado 81401, United States",
+ "social": {
+  "twitter": "https://twitter.com/jensen_design",
+  "facebook": "https://www.facebook.com/jensendesigncabinets/",
+  "linkedin": "https://www.linkedin.com/company/31441505",
+  "instagram": "https://www.instagram.com/jensen_design/",
+  "pinterest": "https://www.pinterest.com/jensendesigncabinets"
+ },
+ "home": {
+  "heading": "OUR VISION FOR YOUR HOME",
+  "text": "Jensen Design helps your home accentuate your distinctive lifestyle with luxurious and superbly functional cabinetry for every room. Cabinetry for each home is meticulously designed and built maintaining a direct and personal relationship with homeowner, architect, and contractor. This ensures that individual needs and style preferences are thoroughly woven into our cabinetry, down to the most intricate detail.",
+  "slideshow": 5,
+  "services": "We design and build high-end custom cabinetry for the whole house: kitchens, bathroom vanities, bars, closets and built-ins, plus trim packages and custom furniture, working with builders, architects, designers and homeowners in Telluride, Mountain Village and Montrose, Colorado."
+ },
+ "seoTitle": "Jensen Design | Custom Cabinetry in Telluride & Montrose, CO",
+ "seoDescription": "Jensen Design designs and builds high-end custom cabinetry for the whole house: kitchens, baths, closets, trim packages and custom furniture, for homes in Telluride, Mountain Village and Montrose, Colorado.",
+ "about": [
+  "We work with builders, architects, designers and homeowners to design and build high-end cabinetry for the whole house. Our design and finish flexibility ensures that the whole house feels like a home, like everything fits just right. In addition to custom cabinetry, we also provide trim packages and custom furniture.",
+  "Jensen Design helps your home accentuate your distinctive lifestyle with luxurious and superbly functional cabinetry for every room. Cabinetry for each home is meticulously designed and built maintaining a direct and personal relationship with homeowner, architect, and contractor. This ensures that individual needs and style preferences are thoroughly woven into our cabinetry, down to the most intricate detail.",
+  "You will find that the products that we offer are of the highest quality. We are knowledgeable in all of the latest trends and advancements in our field, and we do our best to offer only top-of-the-line products to our customers.",
+  "Our finishes are truly a thing of beauty. We can create or match to any color and style that you may have in mind. And if you run your hand over the surface of one of our finished products, you will be amazed at the satin-smooth surface, and your eyes will be drawn the depth and beauty of the colors.",
+  "We are dedicated to providing only the highest quality work. We treat each project as if this were the project that is going to define us, and we will treat your project as a showcase for our finest work."
+ ],
+ "reviews": [
+  {
+   "name": "Keri Yoder",
+   "date": "2020-08-01",
+   "rating": 5,
+   "body": "This summer we embarked on a total remodel of our kitchen and had a very tight timeline.  The best decision we made was to hire Jan, Chris, and the crew.  They were extremely diligent, detail oriented and responsive.  Because of their work ethic, the job was done timely!  The product is beautiful and we could not be more thrilled with the transformation in our tricky log cabin.  For the service and product, it was a great deal financially and has added value to our home.  I would not hesitate to use them again and to highly recommend to anyone building a home or thinking of a remodel!!!!"
+  },
+  {
+   "name": "Francesca Rehnborg",
+   "date": "2018-06-01",
+   "rating": 5,
+   "body": "In 2018 I did a total remodel on a second home in Telluride, Co.    My contractor recommended Jensen design for my kitchen cabinets. After several meetings I decided to go with them and couldn’t be happier.  I had a vision and Chris worked with me to make it happen.  I was so impressed with their professionalism and knowledge that I ended up having all my bathroom vanities, bedroom night stands,  bedroom closets and a beautiful bar made by them as well. \r\n\r\nDefinitely a 5 star operation ..."
+  },
+  {
+   "name": "Susan Ringo",
+   "date": "2018-12-01",
+   "rating": 5,
+   "body": "The Jensen Design team was friendly and easy to work with, yet professional in all aspects.  Our new cabinets are beautifully designed, built and installed.  They delivered on time and on budget.  I don't hesitate to recommend them."
+  },
+  {
+   "name": "Copper Creek Homes, LLC",
+   "date": "2017-08-01",
+   "rating": 5,
+   "body": "Jensen Design provided all the cabinetry, bathroom vanities and built-in furniture for a new custom home project we recently completed.  This was the first time we have used Jensen Design and we are very pleased with how smoothly the process went, from start to finish.  Chris worked directly and effectively with our client to meet her design expectations and stayed within budget, maintaining great communication throughout the project.  After installation, Chris and his team followed up to make adjustments and meet with the client to make sure they were happy, which they are and so are we!  We look forward to working with Jensen Design again in the future."
+  },
+  {
+   "name": "Ken Merideth",
+   "date": "2017-10-01",
+   "rating": 5,
+   "body": "We recently completed a full renovation of our home in Telluride CO.  We are incredibly design driven and detail oriented (ie - not an easy customer!).  I felt compelled to write this review and let the world know how highly we regard Jensen.  From design phase to install Chris and the rest of Jensen were so thoughtful, patient, detail oriented, and focused.  The end result was beyond our already very high expectations and delivered on budget and on time.  I am blown away by this company and I highly recommend considering them for any high end, high expectation project in Colorado or nationwide.  Simply one of the best contractors we have every worked with.  Thank you Chris and team Jensen for making our home so amazing."
+  }
+ ],
+ "heroes": {
+  "projects": "site/c561ddf20f4411d1",
+  "about": "site/b8d167220b1167fd",
+  "contact": "site/fa51f77a0b11679e"
+ }
+}

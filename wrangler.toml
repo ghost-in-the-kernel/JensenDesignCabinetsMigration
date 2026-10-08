@@ -1,0 +1,22 @@
+# Cloudflare Pages project for jensendesigncabinets.com (and telluridecabinets.com).
+name = "jensen-design"
+pages_build_output_dir = "public"
+compatibility_date = "2025-09-01"
+
+# Photos, videos and the gallery list (data/galleries.json); contact messages under messages/.
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "jensen-design-media"
+
+[vars]
+# Cloudflare Access, which guards /admin and /api/admin: the team name (from
+# <team>.cloudflareaccess.com) and the application's Audience (AUD) tag.
+ACCESS_TEAM = ""
+ACCESS_AUD = ""
+
+# Contact form by email, once the domain is on Cloudflare with Email Routing on and
+# jdesign@rmi.net verified as a destination. Until then messages are kept and shown in /admin.
+# [[send_email]]
+# name = "MAILER"
+# destination_address = "jdesign@rmi.net"
+# MAIL_FROM = "website@jensendesigncabinets.com"   (goes under [vars])
