@@ -22,8 +22,11 @@ jobs:
           TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          if [ -n "$TOKEN" ] && [ -n "$ACCOUNT" ]; then echo "ok=yes" >> "$GITHUB_OUTPUT"
-          else echo "::warning::Not deployed: add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID as repository secrets."; echo "ok=no" >> "$GITHUB_OUTPUT"; fi
+          missing=""
+          [ -n "$TOKEN" ] || missing="$missing CLOUDFLARE_API_TOKEN"
+          [ -n "$ACCOUNT" ] || missing="$missing CLOUDFLARE_ACCOUNT_ID"
+          if [ -z "$missing" ]; then echo "Both secrets are set."; echo "ok=yes" >> "$GITHUB_OUTPUT"
+          else echo "::warning::Not deployed. Missing repository secret(s):$missing (Settings, Secrets and variables, Actions, Repository secrets)."; echo "ok=no" >> "$GITHUB_OUTPUT"; fi
       - uses: actions/setup-node@v4
         if: steps.secrets.outputs.ok == 'yes'
         with:
