@@ -38,3 +38,19 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: npx wrangler pages deploy --branch main --commit-hash "$GITHUB_SHA" --commit-message "$(git log -1 --format=%s)"
+      - name: Check the live site
+        if: steps.secrets.outputs.ok == 'yes'
+        run: |
+          site=https://jensen-design.pages.dev
+          sleep 20  # the new deployment takes a moment to reach the address
+          fail=0
+          check() { code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$site$1"); echo "$code $1"; [ "$code" = "$2" ] || fail=1; }
+          for p in / /projects /about /contact /privacy /sitemap.xml /robots.txt; do check "$p" 200; done
+          project=$(curl -s "$site/sitemap.xml" | grep -o "/projects/[^<]*" | head -1)
+          check "$project" 200
+          photo=$(curl -s "$site$project" | grep -o '/media/photos/[^"]*-w.jpg' | head -1)
+          check "$photo" 200
+          check /admin 401                   # locked until Cloudflare Access signs him in
+          check /api/admin/galleries 401
+          check /media/data/galleries.json 404   # his data is never public
+          exit $fail
