@@ -5,7 +5,9 @@ the original title, description and the size it came down at, so nothing is lost
 import json, os, struct, subprocess, sys, time, urllib.parse, urllib.request, urllib.error
 
 MANIFEST, OUT = sys.argv[1], sys.argv[2]
-SIZE_CODES = [16, 15, 14, 9]  # Houzz size codes, largest first; the first that answers wins
+# Houzz size codes, largest first (checked Oct 2026: 14 = 2560px wide, 16 = 1600, 9 = 990; Houzz's public
+# servers serve nothing larger, the camera originals are only in his Houzz account).
+SIZE_CODES = [14, 16, 9]
 
 def fetch(url):
     req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (site migration for owner)'})
@@ -28,9 +30,7 @@ def best_image(img):
         url = f"https://st.hzcdn.com/simgs/{img['externalId']}_{code}-{img.get('contentModified') or '0000'}/home-design.jpg"
         try: b = fetch(url)
         except urllib.error.HTTPError: continue
-        wh = jpeg_size(b) or (0, 0)
-        if not best or wh[0] * wh[1] > best[2][0] * best[2][1]: best = (url, b, wh)
-        if wh[0] >= img.get('width', 0) and wh[1] >= img.get('height', 0): break  # the original
+        return (url, b, jpeg_size(b) or (0, 0))  # the largest that answers
     return best
 
 m = json.load(open(MANIFEST))
