@@ -12,7 +12,7 @@ bucket path is spelled out in `functions/`; use its helpers (`photoKey`, `galler
 
 - Deploying the code never touches the bucket. Nothing in the code may write the bucket except the
   admin API (`functions/api/admin/`) and the contact form.
-- Never overwrite or delete `data/` in the live bucket from a tool or a script. `tools/upload_r2.sh`
+- Never overwrite or delete `data/` in the live bucket from a tool or a script. `tools/upload_r2.py`
   refuses to; keep it that way. Before anything that changes the live bucket: `npm run backup`.
 - Try changes on the preview (`npm run deploy:preview`, its own bucket) or locally (`npm run dev`),
   never against his live bucket.

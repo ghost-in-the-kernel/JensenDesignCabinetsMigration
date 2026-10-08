@@ -34,11 +34,12 @@ photos himself. Free on Cloudflare's free tier; the only cost left is the domain
    The bucket then holds his full-size photos too (privately): he downloads any gallery, or all of
    them, from the admin page. (`archive/for-dad/` has the same as plain folders, if he wants a USB
    stick instead.) `archive/` never goes into git.
-2. **Cloudflare** (`npm install`, then `npx wrangler login` once):
+2. **Cloudflare** (`npm install`; a Cloudflare API token with Workers R2 Storage: Edit and Cloudflare
+   Pages: Edit in `CLOUDFLARE_API_TOKEN`, and the account's id in `CLOUDFLARE_ACCOUNT_ID`):
    ```
    npx wrangler r2 bucket create jensen-design-media
    npx wrangler r2 bucket lifecycle add jensen-design-media delete-old-messages messages/ --expire-days 365
-   tools/upload_r2.sh archive/r2
+   python3 tools/upload_r2.py archive/r2
    npx wrangler pages project create jensen-design --production-branch main
    npm run deploy
    ```
@@ -80,7 +81,7 @@ the code (the logos, in `public/img/`) are in git; his photos never are.
 - **Deploy a change**: `npm run deploy`. Safe at any time; his galleries are unaffected.
 - **Try a change first**: `npm run deploy:preview` publishes it at preview.jensen-design.pages.dev
   with its own bucket (`jensen-design-media-preview`, created once with `npx wrangler r2 bucket
-  create`; `tools/upload_r2.sh archive/r2 --preview` fills it), so nothing he sees or owns changes.
+  create`; `python3 tools/upload_r2.py archive/r2 --preview` fills it), so nothing he sees or owns changes.
   Add the preview's admin paths to the Access application to use its admin page.
 - **His downloads**: the admin page's "Download all photos" and each gallery's "Download" build a
   zip in his browser (`public/zip.js`): a folder per gallery, numbered photos, full size where the
@@ -89,7 +90,7 @@ the code (the logos, in `public/img/`) are in git; his photos never are.
 - **Back up**: `npm run backup` copies the galleries, settings and every photo into `backups/`
   (only what is new since the last time). Do it after launch, before anything that changes the
   bucket, and every so often.
-- **Never re-import over his galleries**: `tools/upload_r2.sh` stops if the bucket already has
+- **Never re-import over his galleries**: `tools/upload_r2.py` stops if the bucket already has
   them. `--replace-galleries` overrides that; back up first.
 - **Locally**: `npm run dev` runs the site at http://localhost:8788 with a local bucket;
   `node tools/load_local.mjs archive/r2` fills it. With `DEV_ADMIN_EMAIL=you@example.com` in

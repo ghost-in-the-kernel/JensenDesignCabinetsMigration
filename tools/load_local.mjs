@@ -1,5 +1,5 @@
 // Fill the local R2 bucket that `npm run dev` uses from a folder staged by build_content.py,
-// in one process (much faster than upload_r2.sh --local).   node tools/load_local.mjs archive/r2
+// in one process (the live and preview buckets: tools/upload_r2.py).   node tools/load_local.mjs archive/r2
 import { readdir, readFile } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 import { getPlatformProxy } from 'wrangler';

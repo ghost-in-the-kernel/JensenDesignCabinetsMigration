@@ -6,7 +6,7 @@ Reads archive/site/manifest.json and archive/photos/ (from extract.py and downlo
 - content/site.json: the words on the pages (about text, reviews, contact, links). Committed.
 - public/img/: the logos. Committed.
 - archive/r2/: everything that goes to the R2 bucket, laid out by key: each photo as a web size
-  and a thumbnail (public) and full size (private, for him to download from the admin page), each video with a poster, and data/galleries.json. upload_r2.sh sends it.
+  and a thumbnail (public) and full size (private, for him to download from the admin page), each video with a poster, and data/galleries.json. upload_r2.py sends it.
 - archive/for-dad/: every project as a folder of numbered photos under its own name, to hand over.
 """
 import json, os, re, shutil, subprocess, sys

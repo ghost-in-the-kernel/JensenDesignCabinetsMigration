@@ -12,7 +12,7 @@
 //   messages/<time>-<id>.json          contact-form messages (deleted after a year) /  never imported over
 //
 // The bucket is his data, not the code: deploying the site never touches it. Only the admin page
-// changes it, plus the one-time import (tools/upload_r2.sh), which will not overwrite data/.
+// changes it, plus the one-time import (tools/upload_r2.py), which will not overwrite data/.
 
 export const GALLERIES = 'data/galleries.json';
 export const SETTINGS = 'data/settings.json';
