@@ -42,7 +42,7 @@ photos himself. Free on Cloudflare's free tier; the only cost left is the domain
    python3 tools/upload_r2.py archive/r2
    npx wrangler pages project create jensen-design --production-branch main
    ```
-   Then add `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as repository secrets on GitHub
+   Then add `CLOUDFLARE_API_TOKEN` as a repository secret on GitHub
    (Settings, Secrets and variables, Actions): from then on every push to `main` deploys the site
    (`.github/workflows/deploy.yml`; Actions, Deploy, Run workflow deploys without a push). The
    site is then at https://jensen-design.pages.dev for him to review. (`npm run deploy` does the

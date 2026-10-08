@@ -1,8 +1,11 @@
 # Every push to main deploys the site to Cloudflare Pages (the code only: his photos and galleries
-# live in R2 and a deploy never touches them). Needs two repository secrets, under Settings, Secrets
-# and variables, Actions: CLOUDFLARE_API_TOKEN (Workers R2 Storage: Edit and Cloudflare Pages: Edit)
-# and CLOUDFLARE_ACCOUNT_ID.
+# live in R2 and a deploy never touches them). Needs one repository secret, under Settings, Secrets
+# and variables, Actions: CLOUDFLARE_API_TOKEN (Workers R2 Storage: Edit and Cloudflare Pages: Edit).
+# The account id is not a secret (it is in the bucket's own address), so it is written here.
 name: Deploy
+
+env:
+  CLOUDFLARE_ACCOUNT_ID: 7165fc1d6994c9688df5c8a66358da96
 
 on:
   push:
@@ -16,17 +19,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Check the Cloudflare secrets are set
+      - name: Check the Cloudflare token is set
         id: secrets
         env:
           TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          missing=""
-          [ -n "$TOKEN" ] || missing="$missing CLOUDFLARE_API_TOKEN"
-          [ -n "$ACCOUNT" ] || missing="$missing CLOUDFLARE_ACCOUNT_ID"
-          if [ -z "$missing" ]; then echo "Both secrets are set."; echo "ok=yes" >> "$GITHUB_OUTPUT"
-          else echo "::warning::Not deployed. Missing repository secret(s):$missing (Settings, Secrets and variables, Actions, Repository secrets)."; echo "ok=no" >> "$GITHUB_OUTPUT"; fi
+          if [ -n "$TOKEN" ]; then echo "The token is set."; echo "ok=yes" >> "$GITHUB_OUTPUT"
+          else echo "::warning::Not deployed. Missing repository secret CLOUDFLARE_API_TOKEN (Settings, Secrets and variables, Actions, Repository secrets)."; echo "ok=no" >> "$GITHUB_OUTPUT"; fi
       - uses: actions/setup-node@v4
         if: steps.secrets.outputs.ok == 'yes'
         with:
@@ -38,5 +37,4 @@ jobs:
         if: steps.secrets.outputs.ok == 'yes'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: npx wrangler pages deploy --branch main --commit-hash "$GITHUB_SHA" --commit-message "$(git log -1 --format=%s)"
