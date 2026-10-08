@@ -1,4 +1,4 @@
-const KEY = 'data/galleries.json';
+import { GALLERIES as KEY } from './storage.js';
 
 /** The galleries and the R2 etag they were read at (for a write that must not lose another). */
 export async function loadGalleries(env) {

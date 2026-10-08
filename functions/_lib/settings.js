@@ -1,5 +1,5 @@
 // His choices from the admin page's Settings, kept in R2 next to the galleries.
-const KEY = 'data/settings.json';
+import { SETTINGS as KEY } from './storage.js';
 
 // Email on, phone off, until he changes them in Settings.
 export const DEFAULTS = { notifyEmail: true, notifyPhone: false, phoneNumber: '' };

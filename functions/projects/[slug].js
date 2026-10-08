@@ -1,5 +1,6 @@
 import { ORIGIN, esc, html, media, page } from '../_lib/html.js';
 import { coverOf, loadGalleries, shortName } from '../_lib/data.js';
+import { photoKey } from '../_lib/storage.js';
 
 export async function onRequestGet({ request, env, params, next }) {
   const { data } = await loadGalleries(env);
@@ -12,16 +13,16 @@ export async function onRequestGet({ request, env, params, next }) {
   // Only the first photo comes with the page; site.js loads each photo just before it is shown,
   // so a 70-photo project costs one photo up front, not seventy.
   const slides = g.photos.map((p, i) => {
-    const key = `g/${g.slug}/${p.id}`;
+    const key = photoKey(g, p);
     const src = i ? 'data-src' : 'fetchpriority="high" src';
     const inner = p.kind === 'video'
-      ? `<video controls preload="none" playsinline ${i ? 'data-poster' : 'poster'}="${media(key)}" src="/media/g/${encodeURIComponent(g.slug)}/${encodeURIComponent(p.id)}.mp4"></video>`
+      ? `<video controls preload="none" playsinline ${i ? 'data-poster' : 'poster'}="${media(key)}" src="${media(key, '', 'mp4')}"></video>`
       : `<img ${src}="${media(key)}" alt="${esc(p.alt || p.title || shortName(g.name))}" width="${p.w}" height="${p.h}">`;
     return `<figure class="slide" data-title="${esc(p.title)}" data-caption="${esc(p.caption)}">${inner}</figure>`;
   }).join('');
   // Every photo is also a plain link, so search engines and people without JavaScript reach them all.
   const list = g.photos.filter((p) => p.kind !== 'video').map((p) =>
-    `<li><a href="${media(`g/${g.slug}/${p.id}`)}">${esc(p.alt || p.title || shortName(g.name))}</a></li>`).join('');
+    `<li><a href="${media(photoKey(g, p))}">${esc(p.alt || p.title || shortName(g.name))}</a></li>`).join('');
 
   const place = g.name.includes(' | ') ? g.name.split(' | ')[1] : 'Telluride, CO';
   const description = g.description
@@ -43,7 +44,7 @@ export async function onRequestGet({ request, env, params, next }) {
     '@context': 'https://schema.org', '@type': 'ImageGallery', name: g.name, description,
     url: `${ORIGIN}/projects/${g.slug}`, author: { '@id': `${ORIGIN}/#business` }, contentLocation: { '@type': 'Place', name: place },
     image: g.photos.filter((p) => p.kind !== 'video').slice(0, 30).map((p) => ({
-      '@type': 'ImageObject', contentUrl: `${ORIGIN}${media(`g/${g.slug}/${p.id}`)}`, caption: p.alt || p.title, width: p.w, height: p.h,
+      '@type': 'ImageObject', contentUrl: `${ORIGIN}${media(photoKey(g, p))}`, caption: p.alt || p.title, width: p.w, height: p.h,
     })),
   };
   const crumbs = {
@@ -53,5 +54,5 @@ export async function onRequestGet({ request, env, params, next }) {
     ],
   };
   return html(page({ title: g.name, path: '/projects', canonical: `/projects/${g.slug}`, body, description,
-    image: cover ? media(`g/${g.slug}/${cover.id}`) : '', ld: [ld, crumbs] }));
+    image: cover ? media(photoKey(g, cover)) : '', ld: [ld, crumbs] }));
 }

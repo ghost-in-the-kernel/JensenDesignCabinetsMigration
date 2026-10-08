@@ -1,7 +1,9 @@
-// Photos and videos from R2. Everything but data/ and messages/ is public.
+import { PUBLIC } from '../_lib/storage.js';
+
+// Photos and videos from R2: only what is under the public prefixes (never data/ or messages/).
 export async function onRequestGet({ request, env, params }) {
   const key = (params.path || []).map(decodeURIComponent).join('/');
-  if (!/^(g|site)\//.test(key)) return new Response('Not found', { status: 404 });
+  if (!PUBLIC.some((prefix) => key.startsWith(prefix)) || key.includes('..')) return new Response('Not found', { status: 404 });
   const obj = await env.MEDIA.get(key, { range: request.headers, onlyIf: request.headers });
   if (!obj) return new Response('Not found', { status: 404 });
   const headers = new Headers();

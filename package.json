@@ -4,7 +4,9 @@
   "type": "module",
   "scripts": {
     "dev": "wrangler pages dev --port 8788",
-    "deploy": "wrangler pages deploy"
+    "deploy": "wrangler pages deploy --branch main",
+    "deploy:preview": "wrangler pages deploy --branch preview",
+    "backup": "python3 tools/backup.py"
   },
   "devDependencies": {
     "wrangler": "^4.40.0"

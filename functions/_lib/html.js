@@ -10,7 +10,9 @@ export const AREA = 'Telluride, Mountain Village and Montrose, Colorado';
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
-export const media = (key, size = '-w') => `/media/${key.split('/').map(encodeURIComponent).join('/')}${size}.jpg`;
+import { media } from './storage.js';
+
+export { media };
 
 const NAV = [['/', 'Jensen Design'], ['/projects', 'Projects'], ['/about', 'About'], ['/contact', 'Contact']];
 

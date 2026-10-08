@@ -70,7 +70,7 @@ for g in index:
         src = os.path.join(ARCHIVE, p['file'])
         if not os.path.exists(src): print('missing', src, file=sys.stderr); continue
         pid = p['externalId'] or os.path.splitext(os.path.basename(src))[0].split('-', 1)[1]
-        key = f"g/{g['slug']}/{pid}"
+        key = f"photos/{g['slug']}/{pid}"  # the layout is in functions/_lib/storage.js
         if src.endswith('.mp4'):
             w, h = poster(src, key)
             shutil.copyfile(src, os.path.join(R2, key + '.mp4'))

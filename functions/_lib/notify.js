@@ -1,5 +1,6 @@
 // Telling him a contact-form message arrived, the ways he chose in the admin page's Settings:
-// by email (on unless he turns it off) and to his phone (off unless he turns it on).
+// by email (on unless he turns it off; his main way, he files them into inbox folders, so the sender
+// and subject stay the same every time) and to his phone (off unless he turns it on).
 //
 // Email: Cloudflare Email Routing, once the domain is on Cloudflare; the send_email binding MAILER
 // and MAIL_FROM in wrangler.toml.

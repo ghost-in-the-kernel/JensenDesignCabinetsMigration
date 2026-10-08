@@ -7,7 +7,8 @@ const app = document.getElementById('app');
 const WEB = 2000, THUMB = 800;
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-const thumb = (g, p) => `/media/g/${encodeURIComponent(g.slug)}/${encodeURIComponent(p.id)}-t.jpg`;
+// The bucket layout is in functions/_lib/storage.js; this is its photos/ thumbnail address.
+const thumb = (g, p) => `/media/photos/${encodeURIComponent(g.slug)}/${encodeURIComponent(p.id)}-t.jpg`;
 const shortName = (name) => name.split(' | ')[0];
 
 function toast(msg, bad = false) {

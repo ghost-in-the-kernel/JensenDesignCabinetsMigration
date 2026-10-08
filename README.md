@@ -48,24 +48,44 @@ photos himself. Free on Cloudflare's free tier; the only cost left is the domain
    (from `<team>.cloudflareaccess.com`) and the application's Audience (AUD) tag in `wrangler.toml`
    as `ACCESS_TEAM` and `ACCESS_AUD`, then `npm run deploy` again.
 4. **Domains**: he adds both domains to Cloudflare and changes their nameservers where he bought
-   them. Then the Pages project's Custom domains gets `jensendesigncabinets.com`,
-   `www.jensendesigncabinets.com`, `telluridecabinets.com` and `www.telluridecabinets.com`.
-   Allow up to 48 hours for the change to settle before cancelling Houzz.
-5. **Messages to his phone**: the contact form tells him by email (on by default) and, if he turns it
-   on in the admin page's Settings, on his phone, as Houzz did. Phone needs one of these set up.
-   Free push notification: he installs the ntfy app and subscribes to a long random topic name;
-   `npx wrangler pages secret put NTFY_URL` with `https://ntfy.sh/<that name>`. Or real text messages
-   through Twilio (a few dollars a month, after the carriers approve the business registration): the
-   `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM` and `NOTIFY_PHONE` secrets. Either way the
-   message is also in the admin page under Messages.
-6. **After launch**: in Google Search Console, verify jensendesigncabinets.com (a DNS record,
+   them. Before the switch, copy every existing DNS record (Cloudflare's import usually finds them;
+   check for MX and TXT records in particular). Then the Pages project's Custom domains gets
+   `jensendesigncabinets.com`, `www.jensendesigncabinets.com`, `telluridecabinets.com` and
+   `www.telluridecabinets.com`, and the Access application gets the two admin paths on
+   jensendesigncabinets.com. Allow up to 48 hours for the change to settle before cancelling Houzz.
+5. **Contact-form email (required)**: his main way of hearing from the site. On the
+   jensendesigncabinets.com zone: Email, Email Routing, enable (it adds the records it needs; his own
+   mail is at rmi.net, so nothing of his changes), and add `jdesign@rmi.net` as a destination address:
+   he must click the link in the email Cloudflare sends him. Then uncomment the `send_email` lines and
+   `MAIL_FROM` in `wrangler.toml`, `npm run deploy`, and press "Send me a test" in the admin's
+   Settings. Every notice comes from `website@jensendesigncabinets.com` with the subject "Website
+   message from <name>", so one rule in his inbox files them all; replying answers the sender.
+6. **Phone notices (optional)**: he can also turn on phone notices in Settings, once a channel is
+   set up. Free push notification: he installs the ntfy app and subscribes to a long random topic
+   name; `npx wrangler pages secret put NTFY_URL` with `https://ntfy.sh/<that name>`. (Real text
+   messages through Twilio are also built in: the `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN` and
+   `TWILIO_FROM` secrets, his number in Settings, and the carriers' business registration first.)
+7. **After launch**: in Google Search Console, verify jensendesigncabinets.com (a DNS record,
    one click on Cloudflare) and submit `https://jensendesigncabinets.com/sitemap.xml`. In his Google
-   Business Profile, set the website to https://jensendesigncabinets.com. Optionally turn on Email
-   Routing and the `send_email` lines in `wrangler.toml` so contact-form messages also arrive by
-   email (until then they are in the admin page under Messages).
+   Business Profile, set the website to https://jensendesigncabinets.com. Then `npm run backup`.
 
-## Working on it
+## Looking after it
 
-`npm run dev` runs the site at http://localhost:8788 with a local R2; `node tools/load_local.mjs
-archive/r2` fills it. With `DEV_ADMIN_EMAIL=you@example.com` in `.dev.vars`, `/admin` works on
-localhost without Access (never anywhere else).
+**His data and the code are kept apart.** The code (this repository) is deployed to Pages; his
+photos, galleries, settings and messages live in the R2 bucket, laid out as written at the top of
+`functions/_lib/storage.js`. Deploying the code never touches the bucket. Images that belong to
+the code (the logos, in `public/img/`) are in git; his photos never are.
+
+- **Deploy a change**: `npm run deploy`. Safe at any time; his galleries are unaffected.
+- **Try a change first**: `npm run deploy:preview` publishes it at preview.jensen-design.pages.dev
+  with its own bucket (`jensen-design-media-preview`, created once with `npx wrangler r2 bucket
+  create`; `tools/upload_r2.sh archive/r2 --preview` fills it), so nothing he sees or owns changes.
+  Add the preview's admin paths to the Access application to use its admin page.
+- **Back up**: `npm run backup` copies the galleries, settings and every photo into `backups/`
+  (only what is new since the last time). Do it after launch, before anything that changes the
+  bucket, and every so often.
+- **Never re-import over his galleries**: `tools/upload_r2.sh` stops if the bucket already has
+  them. `--replace-galleries` overrides that; back up first.
+- **Locally**: `npm run dev` runs the site at http://localhost:8788 with a local bucket;
+  `node tools/load_local.mjs archive/r2` fills it. With `DEV_ADMIN_EMAIL=you@example.com` in
+  `.dev.vars`, `/admin` works on localhost without Access (never anywhere else).

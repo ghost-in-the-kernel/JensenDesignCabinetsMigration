@@ -2,6 +2,7 @@ import { loadGalleries, saveGalleries } from '../../_lib/data.js';
 import { channels, loadSettings, saveSettings } from '../../_lib/settings.js';
 import { notifyOwner } from '../../_lib/notify.js';
 import { site } from '../../_lib/html.js';
+import { MESSAGES, galleryPrefix, photoKey } from '../../_lib/storage.js';
 
 const json = (data, status = 200) => Response.json(data, { status, headers: { 'cache-control': 'no-store' } });
 const fail = (error, status = 400) => json({ error }, status);
@@ -40,7 +41,7 @@ async function addPhoto(request, env, id) {
   const { data } = await loadGalleries(env);
   const g = gallery(data, id);
   const pid = crypto.randomUUID().replace(/-/g, '').slice(0, 16);
-  const key = `g/${g.slug}/${pid}`;
+  const key = photoKey(g, pid);
   const jpeg = { httpMetadata: { contentType: 'image/jpeg' } };
   await env.MEDIA.put(`${key}-w.jpg`, web.stream(), jpeg);
   await env.MEDIA.put(`${key}-t.jpg`, thumb.stream(), jpeg);
@@ -90,7 +91,7 @@ async function route(request, env, parts) {
     }
     if (id && !sub && method === 'DELETE') {
       const g = await mutate(env, (d) => { const g = gallery(d, id); d.galleries = d.galleries.filter((x) => x !== g); return g; });
-      await deletePrefix(env, `g/${g.slug}/`);
+      await deletePrefix(env, galleryPrefix(g));
       return { deleted: g.id };
     }
     if (id && sub === 'move' && method === 'POST') {
@@ -116,7 +117,7 @@ async function route(request, env, parts) {
           if (g.cover === pid) g.cover = g.photos[0]?.id || null;
           return g;
         });
-        await deletePrefix(env, `g/${g.slug}/${pid}`);
+        await deletePrefix(env, photoKey(g, pid));
         return { deleted: pid };
       }
       if (action === 'move' && method === 'POST') {
@@ -128,13 +129,13 @@ async function route(request, env, parts) {
 
   if (area === 'messages') {
     if (!id && method === 'GET') {
-      const page = await env.MEDIA.list({ prefix: 'messages/' });
+      const page = await env.MEDIA.list({ prefix: MESSAGES });
       const keys = page.objects.map((o) => o.key).sort().reverse().slice(0, 200);
       return Promise.all(keys.map(async (key) => ({ key, ...(await (await env.MEDIA.get(key)).json()) })));
     }
     if (id && method === 'DELETE') {
       if (!/^[\w-]+\.json$/.test(id)) throw new Problem('No such message.', 404);
-      await env.MEDIA.delete(`messages/${id}`);
+      await env.MEDIA.delete(`${MESSAGES}${id}`);
       return { deleted: id };
     }
   }

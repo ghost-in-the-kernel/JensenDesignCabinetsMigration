@@ -1,5 +1,6 @@
 import { ORIGIN, esc, media } from './_lib/html.js';
 import { loadGalleries } from './_lib/data.js';
+import { photoKey } from './_lib/storage.js';
 
 // Every page and every project, with its photos, so search engines find them all.
 export async function onRequestGet({ env }) {
@@ -8,7 +9,7 @@ export async function onRequestGet({ env }) {
   const urls = ['/', '/projects', '/about', '/contact'].map((p) => page(p));
   for (const g of data.galleries.filter((x) => x.photos.length)) {
     const images = g.photos.filter((p) => p.kind !== 'video').slice(0, 1000)
-      .map((p) => `<image:image><image:loc>${esc(ORIGIN + media(`g/${g.slug}/${p.id}`))}</image:loc></image:image>`).join('');
+      .map((p) => `<image:image><image:loc>${esc(ORIGIN + media(photoKey(g, p)))}</image:loc></image:image>`).join('');
     urls.push(page(`/projects/${g.slug}`, images));
   }
   return new Response(`<?xml version="1.0" encoding="UTF-8"?>

@@ -1,5 +1,6 @@
 import { contactBlock, esc, hero, html, page, site, socialLinks } from './_lib/html.js';
 import { notifyOwner } from './_lib/notify.js';
+import { MESSAGES } from './_lib/storage.js';
 
 function form(values = {}, note = '') {
   const v = (k) => esc(values[k] || '');
@@ -53,7 +54,7 @@ export async function onRequestPost({ request, env, waitUntil }) {
   delete values.website;
   const message = { ...values, received: new Date().toISOString() };
   const id = `${message.received.replace(/[:.]/g, '-')}-${crypto.randomUUID().slice(0, 8)}`;
-  await env.MEDIA.put(`messages/${id}.json`, JSON.stringify(message), { httpMetadata: { contentType: 'application/json' } });
+  await env.MEDIA.put(`${MESSAGES}${id}.json`, JSON.stringify(message), { httpMetadata: { contentType: 'application/json' } });
   waitUntil(notifyOwner(env, message)); // the visitor does not wait for it
   return render('<p class="form-note">Thank you. We will be in touch soon.</p>');
 }

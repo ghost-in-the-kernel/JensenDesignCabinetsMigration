@@ -3,7 +3,8 @@ name = "jensen-design"
 pages_build_output_dir = "public"
 compatibility_date = "2025-09-01"
 
-# Photos, videos and the gallery list (data/galleries.json); contact messages under messages/.
+# His photos, galleries, settings and messages: the live bucket (also used by `npm run dev`, which
+# keeps its own local copy). Its layout is in functions/_lib/storage.js. Deploying never touches it.
 [[r2_buckets]]
 binding = "MEDIA"
 bucket_name = "jensen-design-media"
@@ -14,11 +15,22 @@ bucket_name = "jensen-design-media"
 ACCESS_TEAM = ""
 ACCESS_AUD = ""
 
+# Preview deploys (`npm run deploy:preview`, at preview.jensen-design.pages.dev) use a bucket of
+# their own, so trying a change never touches his photos. Pages does not inherit these, so the
+# settings above are repeated.
+[env.preview]
+[[env.preview.r2_buckets]]
+binding = "MEDIA"
+bucket_name = "jensen-design-media-preview"
+[env.preview.vars]
+ACCESS_TEAM = ""
+ACCESS_AUD = ""
+
 # Contact-form messages to his phone: see functions/_lib/notify.js (NTFY_URL, or the TWILIO_* settings),
 # set as secrets with `npx wrangler pages secret put NAME`, never written here.
 
-# Contact form by email, once the domain is on Cloudflare with Email Routing on and
-# jdesign@rmi.net verified as a destination. Until then messages are kept and shown in /admin.
+# Contact-form email to him (README step 5): uncomment once the domain is on Cloudflare with Email
+# Routing on and jdesign@rmi.net verified as a destination. Until then messages are kept in /admin.
 # [[send_email]]
 # name = "MAILER"
 # destination_address = "jdesign@rmi.net"

@@ -1,5 +1,6 @@
 # The scraped site and the photo archive live outside git (photos go to R2 and to his own backup).
 archive/
+backups/
 node_modules/
 .wrangler/
 .dev.vars
