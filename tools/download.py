@@ -2,7 +2,7 @@
 
 Resumable: a file already on disk is skipped. Writes photos/index.json: project -> photos, with
 the original title, description and the size it came down at, so nothing is lost on the way."""
-import json, os, struct, subprocess, sys, time, urllib.parse, urllib.request, urllib.error
+import json, os, re, struct, subprocess, sys, time, urllib.parse, urllib.request, urllib.error
 
 MANIFEST, OUT = sys.argv[1], sys.argv[2]
 # Houzz size codes, largest first (checked Oct 2026: 14 = 2560px wide, 16 = 1600, 9 = 990; Houzz's public
@@ -33,6 +33,27 @@ def best_image(img):
         return (url, b, jpeg_size(b) or (0, 0))  # the largest that answers
     return best
 
+def hls_to_mp4(url, out):
+    """A Houzz video (an HLS stream) as one .mp4, at its best quality. The playlist and its pieces are
+    fetched here, not by ffmpeg, which ignores HTTPS proxies; ffmpeg only joins them."""
+    base = url.rsplit('/', 1)[0] + '/'
+    master = fetch(url).decode()
+    variants, bw = [], 0
+    for line in master.splitlines():
+        if line.startswith('#EXT-X-STREAM-INF'):
+            bw = int(re.search(r'BANDWIDTH=(\d+)', line).group(1))
+        elif line and not line.startswith('#'):
+            variants.append((bw, line))
+    playlist = urllib.parse.urljoin(base, max(variants)[1]) if variants else url
+    if 'EXT-X-KEY' in (text := fetch(playlist).decode()): raise RuntimeError('encrypted stream')
+    pieces = [urllib.parse.urljoin(playlist, l) for l in text.splitlines() if l and not l.startswith('#')]
+    ts = out + '.ts'
+    with open(ts, 'wb') as f:
+        for piece in pieces: f.write(fetch(piece))
+    subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', ts, '-c', 'copy', '-bsf:a', 'aac_adtstoasc',
+                    '-movflags', '+faststart', out], check=True)
+    os.remove(ts)
+
 m = json.load(open(MANIFEST))
 os.makedirs(os.path.join(OUT, 'photos'), exist_ok=True)
 index, failed = [], []
@@ -50,8 +71,8 @@ for proj in m['projects'].values():
             f = os.path.join(d, f'{n:03d}-{img.get("externalId") or vid["id"]}.mp4')
             rec['file'] = os.path.relpath(f, OUT)
             if not os.path.exists(f):
-                r = subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', vid['servingUrl'], '-c', 'copy', f])
-                if r.returncode: failed.append(vid['servingUrl'])
+                try: hls_to_mp4(vid['servingUrl'], f)
+                except Exception as e: failed.append(vid['servingUrl']); print('video failed:', e, file=sys.stderr)
         else:
             f = os.path.join(d, f'{n:03d}-{img["externalId"]}.jpg')
             rec['file'] = os.path.relpath(f, OUT)

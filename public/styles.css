@@ -60,8 +60,8 @@ a { color: inherit; }
 /* Page header photo with the title over it */
 .hero { position: relative; background: #333 center / cover no-repeat; display: flex; align-items: center; justify-content: center; min-height: 360px; padding: 48px 16px; }
 .hero--short { min-height: 240px; }
-.hero__shade { position: absolute; inset: 0; background: rgba(0, 0, 0, .3); }
-.hero .title-1 { position: relative; margin: 0; }
+.hero__shade { position: absolute; inset: 0; background: rgba(0, 0, 0, .45); }
+.hero .title-1 { position: relative; margin: 0; text-shadow: 0 2px 12px rgba(0, 0, 0, .6); }
 
 /* Slideshows */
 .slideshow { position: relative; background: var(--slide-bg); overflow: hidden; }
