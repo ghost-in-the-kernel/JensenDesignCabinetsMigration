@@ -5,11 +5,12 @@
 
 Writes backups/<date>/galleries.json and settings.json (read from the bucket with wrangler; run
 `npx wrangler login` first) and every photo the galleries list into backups/media/, which is shared
-between backups: a photo already there is not fetched again. Photos come through the public site,
-the same files visitors see. Contact-form messages are not copied (they are private and expire).
+between backups: a photo already there is not fetched again. The web copies come through the public
+site, the same files visitors see; the private full-size photos (originals/) come through wrangler,
+which is slower the first time (they never change, so only new ones are fetched after that). Contact-form messages are not copied (they are private and expire).
 Run it before any change that touches the bucket, and now and then anyway. backups/ is not in git.
 """
-import argparse, datetime, json, os, subprocess, sys, urllib.request
+import argparse, concurrent.futures, datetime, json, os, subprocess, sys, urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ap = argparse.ArgumentParser()
@@ -50,5 +51,16 @@ for key in keys:
         os.replace(dest + '.part', dest); got += 1
     except Exception as e:
         failed += 1; print(f'failed {key}: {e}', file=sys.stderr)
+# The private full-size photos, straight from the bucket.
+originals = [f"originals/{g['slug']}/{p['id']}.{p['original']}" for g in galleries for p in g['photos'] if p.get('original')]
+todo = [k for k in originals if not os.path.exists(os.path.join(media, k))]
+def fetch_original(key):
+    dest = os.path.join(media, key)
+    os.makedirs(os.path.dirname(dest), exist_ok=True)
+    if get_object(key, dest + '.part'): os.replace(dest + '.part', dest); return True
+    print(f'failed {key}', file=sys.stderr); return False
+with concurrent.futures.ThreadPoolExecutor(8) as pool:
+    ok = list(pool.map(fetch_original, todo))
+got += sum(ok); failed += len(ok) - sum(ok); had += len(originals) - len(todo)
 print(f'{len(galleries)} galleries saved in {day}; photos: {got} new, {had} already backed up, {failed} failed')
 sys.exit(1 if failed else 0)

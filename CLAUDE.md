@@ -28,6 +28,7 @@ bucket path is spelled out in `functions/`; use its helpers (`photoKey`, `galler
 | Look | `public/styles.css` (his Houzz theme's colours and fonts; fonts served from `public/fonts/`) |
 | Slideshows, phone menu, click-to-load map | `public/site.js` |
 | Admin page and its API | `functions/admin/`, `public/admin.js`, `public/admin.css`, `functions/api/admin/` |
+| His photo downloads (zip in the browser) | `public/zip.js`, `download()` in `public/admin.js`; full-size photos are private under `originals/` |
 | Who may use the admin | Cloudflare Access; checked again in `functions/_lib/access.js` |
 | Contact form and its notices | `functions/contact.js`, `functions/_lib/notify.js` (email by default, phone if he turns it on), `functions/_lib/settings.js` |
 | Redirects and search engines | `functions/_middleware.js` (one canonical host), `functions/sitemap.xml.js`, `public/robots.txt` |

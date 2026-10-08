@@ -31,8 +31,9 @@ photos himself. Free on Cloudflare's free tier; the only cost left is the domain
    python3 tools/download.py archive/site/manifest.json archive
    python3 tools/build_content.py archive
    ```
-   `archive/for-dad/` is then every project as a folder of numbered photos under its own name, for
-   him to keep (a USB stick, or a Google Drive link). `archive/` never goes into git.
+   The bucket then holds his full-size photos too (privately): he downloads any gallery, or all of
+   them, from the admin page. (`archive/for-dad/` has the same as plain folders, if he wants a USB
+   stick instead.) `archive/` never goes into git.
 2. **Cloudflare** (`npm install`, then `npx wrangler login` once):
    ```
    npx wrangler r2 bucket create jensen-design-media
@@ -81,6 +82,10 @@ the code (the logos, in `public/img/`) are in git; his photos never are.
   with its own bucket (`jensen-design-media-preview`, created once with `npx wrangler r2 bucket
   create`; `tools/upload_r2.sh archive/r2 --preview` fills it), so nothing he sees or owns changes.
   Add the preview's admin paths to the Access application to use its admin page.
+- **His downloads**: the admin page's "Download all photos" and each gallery's "Download" build a
+  zip in his browser (`public/zip.js`): a folder per gallery, numbered photos, full size where the
+  bucket has them (`originals/`, private, through `/api/admin/originals/`), and a photos.txt of the
+  titles and captions.
 - **Back up**: `npm run backup` copies the galleries, settings and every photo into `backups/`
   (only what is new since the last time). Do it after launch, before anything that changes the
   bucket, and every so often.

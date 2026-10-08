@@ -2,7 +2,7 @@ import { loadGalleries, saveGalleries } from '../../_lib/data.js';
 import { channels, loadSettings, saveSettings } from '../../_lib/settings.js';
 import { notifyOwner } from '../../_lib/notify.js';
 import { site } from '../../_lib/html.js';
-import { MESSAGES, galleryPrefix, photoKey } from '../../_lib/storage.js';
+import { MESSAGES, ORIGINALS, galleryPrefix, originalKey, originalsPrefix, photoKey } from '../../_lib/storage.js';
 
 const json = (data, status = 200) => Response.json(data, { status, headers: { 'cache-control': 'no-store' } });
 const fail = (error, status = 400) => json({ error }, status);
@@ -92,6 +92,7 @@ async function route(request, env, parts) {
     if (id && !sub && method === 'DELETE') {
       const g = await mutate(env, (d) => { const g = gallery(d, id); d.galleries = d.galleries.filter((x) => x !== g); return g; });
       await deletePrefix(env, galleryPrefix(g));
+      await deletePrefix(env, originalsPrefix(g));
       return { deleted: g.id };
     }
     if (id && sub === 'move' && method === 'POST') {
@@ -118,6 +119,7 @@ async function route(request, env, parts) {
           return g;
         });
         await deletePrefix(env, photoKey(g, pid));
+        await deletePrefix(env, originalKey(g, pid));
         return { deleted: pid };
       }
       if (action === 'move' && method === 'POST') {
@@ -138,6 +140,16 @@ async function route(request, env, parts) {
       await env.MEDIA.delete(`${MESSAGES}${id}`);
       return { deleted: id };
     }
+  }
+
+  // His full-size photos, for the admin page's download buttons; private, so only through here.
+  if (area === 'originals' && method === 'GET' && id && sub && !pid) {
+    if (!/^[\w-]+$/.test(id) || !/^[\w-]+\.\w+$/.test(sub)) throw new Problem('No such photo.', 404);
+    const obj = await env.MEDIA.get(`${ORIGINALS}${id}/${sub}`);
+    if (!obj) throw new Problem('No such photo.', 404);
+    const headers = new Headers({ 'cache-control': 'private, no-store' });
+    obj.writeHttpMetadata(headers);
+    return new Response(obj.body, { headers });
   }
 
   if (area === 'settings') {
@@ -171,6 +183,7 @@ async function route(request, env, parts) {
 export async function onRequest({ request, env, params, data }) {
   try {
     const result = await route(request, env, params.route || []);
+    if (result instanceof Response) return result;
     return json(result ?? { email: data.email });
   } catch (e) {
     if (e instanceof Problem) return fail(e.message, e.status);

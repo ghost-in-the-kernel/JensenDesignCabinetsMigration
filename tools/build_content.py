@@ -6,7 +6,7 @@ Reads archive/site/manifest.json and archive/photos/ (from extract.py and downlo
 - content/site.json: the words on the pages (about text, reviews, contact, links). Committed.
 - public/img/: the logos. Committed.
 - archive/r2/: everything that goes to the R2 bucket, laid out by key: each photo as a web size
-  and a thumbnail, each video with a poster, and data/galleries.json. upload_r2.sh sends it.
+  and a thumbnail (public) and full size (private, for him to download from the admin page), each video with a poster, and data/galleries.json. upload_r2.sh sends it.
 - archive/for-dad/: every project as a folder of numbered photos under its own name, to hand over.
 """
 import json, os, re, shutil, subprocess, sys
@@ -78,8 +78,14 @@ for g in index:
         else:
             w, h = sizes(src, key)
             kind = 'image'
-        photos.append({'id': pid, 'kind': kind, 'title': p.get('title') or '', 'caption': p.get('comments') or '',
-                       'alt': alt_text(AUTO.get(pid), g['name']), 'w': w, 'h': h})
+            # The full-size photo, private (only the admin can download it): the bucket is his archive.
+            orig = os.path.join(R2, f"originals/{g['slug']}/{pid}.jpg")
+            os.makedirs(os.path.dirname(orig), exist_ok=True)
+            shutil.copyfile(src, orig)
+        photo = {'id': pid, 'kind': kind, 'title': p.get('title') or '', 'caption': p.get('comments') or '',
+                 'alt': alt_text(AUTO.get(pid), g['name']), 'w': w, 'h': h}
+        if kind == 'image': photo['original'] = 'jpg'
+        photos.append(photo)
         shutil.copyfile(src, os.path.join(dad, f"{p['order']:02d}{os.path.splitext(src)[1]}"))
     cover = g.get('cover') if any(x['id'] == g.get('cover') for x in photos) else (photos[0]['id'] if photos else None)
     galleries.append({'id': str(g['id']), 'slug': g['slug'], 'name': g['name'],

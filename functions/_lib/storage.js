@@ -5,6 +5,8 @@
 //   photos/<gallery slug>/<id>-t.jpg   and 800px thumbnails   } public, served at /media/...
 //   photos/<gallery slug>/<id>.mp4     videos                 |
 //   site/<id>-w.jpg, -t.jpg            page header photos    /
+//   originals/<gallery slug>/<id>.jpg  full-size photos (from Houzz): private, only the admin
+//                                      can download them (/api/admin/originals/...)
 //   data/galleries.json                the galleries and their photos, in order   \  private:
 //   data/settings.json                 his choices from the admin page's Settings  } never served,
 //   messages/<time>-<id>.json          contact-form messages (deleted after a year) /  never imported over
@@ -17,10 +19,13 @@ export const SETTINGS = 'data/settings.json';
 export const MESSAGES = 'messages/';
 export const PHOTOS = 'photos/';
 export const SITE_IMAGES = 'site/';
+export const ORIGINALS = 'originals/';
 export const PUBLIC = [PHOTOS, SITE_IMAGES];
 
 export const galleryPrefix = (g) => `${PHOTOS}${g.slug}/`;
 export const photoKey = (g, p) => `${galleryPrefix(g)}${typeof p === 'string' ? p : p.id}`;
+export const originalsPrefix = (g) => `${ORIGINALS}${g.slug}/`;
+export const originalKey = (g, p) => `${originalsPrefix(g)}${typeof p === 'string' ? p : p.id}`;
 
 /** The address of a stored file on the site: the web size by default, '-t' for the thumbnail. */
 export const media = (key, size = '-w', ext = 'jpg') =>

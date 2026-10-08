@@ -3,6 +3,8 @@
 // The admin page: galleries (add, rename, reorder, remove), photos (add, caption, cover, reorder,
 // remove) and the messages people sent from the contact form. Talks to /api/admin.
 
+import { makeZip } from './zip.js';
+
 const app = document.getElementById('app');
 const WEB = 2000, THUMB = 800;
 
@@ -32,6 +34,51 @@ async function act(fn, done) {
   render();
 }
 
+// ---- Downloading his photos -----------------------------------------------------------------
+
+const folderName = (g) => shortName(g.name).replace(/[\\/:*?"<>|]+/g, '-').trim() || 'Gallery';
+
+// The full-size photo where the bucket has one (the photos from Houzz), else the 2000px copy.
+const fileFor = (g, p) => {
+  const slug = encodeURIComponent(g.slug), id = encodeURIComponent(p.id);
+  if (p.original) return [`/api/admin/originals/${slug}/${id}.${p.original}`, p.original];
+  if (p.kind === 'video') return [`/media/photos/${slug}/${id}.mp4`, 'mp4'];
+  return [`/media/photos/${slug}/${id}-w.jpg`, 'jpg'];
+};
+
+async function galleryZip(g, progress) {
+  const folder = folderName(g), files = [], list = [];
+  for (const [i, p] of g.photos.entries()) {
+    progress(`${shortName(g.name)}: photo ${i + 1} of ${g.photos.length}`);
+    const [url, ext] = fileFor(g, p);
+    const r = await fetch(url, { headers: { 'x-admin': '1' } });
+    if (!r.ok) throw new Error(`Photo ${i + 1} of ${shortName(g.name)} could not be fetched (${r.status}).`);
+    const name = `${String(i + 1).padStart(2, '0')}.${ext}`;
+    files.push({ name: `${folder}/${name}`, data: new Uint8Array(await r.arrayBuffer()) });
+    list.push([name, p.title, p.caption].filter(Boolean).join('  -  '));
+  }
+  const about = [g.name, g.description, '', ...list].filter((x, i) => x || i > 1).join('\r\n');
+  files.push({ name: `${folder}/photos.txt`, data: new TextEncoder().encode(about) });
+  return makeZip(files);
+}
+
+function save(blob, name) {
+  const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: name });
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+}
+
+async function download(galleries, status) {
+  const show = (t) => { status.textContent = t; };
+  try {
+    for (const g of galleries.filter((x) => x.photos.length)) save(await galleryZip(g, show), `${folderName(g)}.zip`);
+    show('');
+    toast(galleries.length > 1 ? 'Done: one zip file per gallery is in your Downloads folder.' : 'Done: the zip file is in your Downloads folder.');
+  } catch (e) {
+    show(''); toast(e.message, true);
+  }
+}
+
 // ---- Galleries -------------------------------------------------------------------------------
 
 let state = { galleries: [] };
@@ -41,6 +88,11 @@ async function listView() {
   app.innerHTML = `
 <h1>Galleries</h1>
 <p class="hint">These are the projects on the website, in the order they appear. The first ${5} are also the slideshow on the home page.</p>
+<div class="card download">
+  <div><strong>Your photos</strong><br><span class="hint">Download every gallery to this computer: one zip file per gallery, full size where we have it. Your browser may ask once to allow several downloads.</span></div>
+  <button id="download-all">Download all photos</button>
+  <span class="progress" id="download-status"></span>
+</div>
 <form class="card new" id="new">
   <h2>Add a new gallery</h2>
   <label>Name <input name="name" required maxlength="120" placeholder="e.g. Aspen Kitchen | Telluride, CO"></label>
@@ -56,6 +108,7 @@ async function listView() {
   </a>
   <div class="buttons">
     <a class="button" href="#gallery/${esc(g.id)}">Open</a>
+    <button data-download ${g.photos.length ? '' : 'disabled'}>Download</button>
     <button data-move="${i - 1}" ${i === 0 ? 'disabled' : ''} title="Move up">&uarr;</button>
     <button data-move="${i + 1}" ${i === state.galleries.length - 1 ? 'disabled' : ''} title="Move down">&darr;</button>
     <button class="danger" data-delete>Delete</button>
@@ -63,6 +116,8 @@ async function listView() {
 </li>`;
   }).join('')}</ol>`;
 
+  const status = document.getElementById('download-status');
+  document.getElementById('download-all').onclick = () => download(state.galleries, status);
   document.getElementById('new').onsubmit = (e) => {
     e.preventDefault();
     const f = new FormData(e.target);
@@ -74,6 +129,7 @@ async function listView() {
   app.querySelectorAll('.gallery').forEach((li) => {
     const id = li.dataset.id, g = state.galleries.find((x) => x.id === id);
     li.querySelectorAll('[data-move]').forEach((b) => { b.onclick = () => act(() => api(`galleries/${id}/move`, { method: 'POST', body: { to: Number(b.dataset.move) } })); });
+    li.querySelector('[data-download]').onclick = () => download([g], status);
     li.querySelector('[data-delete]').onclick = () => {
       if (!confirm(`Delete the gallery "${shortName(g.name)}" and all ${g.photos.length} of its photos from the website? This cannot be undone.`)) return;
       act(() => api(`galleries/${id}`, { method: 'DELETE' }), 'Gallery deleted.');
@@ -124,7 +180,9 @@ async function galleryView(id) {
   <label>Name <input name="name" required maxlength="120" value="${esc(g.name)}"></label>
   <label>Description (optional) <textarea name="description" rows="3" maxlength="2000">${esc(g.description)}</textarea></label>
   <div class="buttons"><button class="big">Save name and description</button>
-  <a class="button" href="/projects/${esc(g.slug)}" target="_blank">See it on the site</a></div>
+  <a class="button" href="/projects/${esc(g.slug)}" target="_blank">See it on the site</a>
+  <button type="button" id="download" ${g.photos.length ? '' : 'disabled'}>Download these photos</button>
+  <span class="progress" id="download-status"></span></div>
 </form>
 <label class="card drop" id="drop">
   <strong>Add photos</strong>
@@ -150,6 +208,7 @@ async function galleryView(id) {
     const f = new FormData(e.target);
     act(() => api(`galleries/${id}`, { method: 'PATCH', body: { name: f.get('name'), description: f.get('description') } }), 'Saved.');
   };
+  document.getElementById('download').onclick = () => download([g], document.getElementById('download-status'));
   const drop = document.getElementById('drop'), input = drop.querySelector('input'), progress = document.getElementById('progress');
   input.onchange = () => input.files.length && upload(g, [...input.files], progress);
   drop.ondragover = (e) => { e.preventDefault(); drop.classList.add('over'); };
