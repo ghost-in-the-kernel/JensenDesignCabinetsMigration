@@ -50,7 +50,8 @@ jobs:
           check "$project" 200
           photo=$(curl -s "$site$project" | grep -o '/media/photos/[^"]*-w.jpg' | head -1)
           check "$photo" 200
-          check /admin 401                   # locked until Cloudflare Access signs him in
-          check /api/admin/galleries 401
+          locked() { code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$site$1"); echo "$code $1 (must not be 200)"; [ "$code" != 200 ] || fail=1; }
+          locked /admin                      # Cloudflare Access sends visitors to its sign-in page
+          locked /api/admin/galleries
           check /media/data/galleries.json 404   # his data is never public
           exit $fail

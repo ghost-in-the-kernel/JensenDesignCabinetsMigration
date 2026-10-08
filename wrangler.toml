@@ -11,9 +11,11 @@ bucket_name = "jensen-design-media"
 
 [vars]
 # Cloudflare Access, which guards /admin and /api/admin: the team name (from
-# <team>.cloudflareaccess.com) and the application's Audience (AUD) tag.
-ACCESS_TEAM = ""
-ACCESS_AUD = ""
+# <team>.cloudflareaccess.com) and the application's Audience (AUD) tag. The application is
+# "Jensen site admin" in Zero Trust, Access controls, Applications; who may sign in is the
+# Access group "Jensen site admins".
+ACCESS_TEAM = "jensendesign"
+ACCESS_AUD = "0bcae1e511bb8c4dd3547447143cf257fe394f0f01c3d1a727ea85a90b5f29f7"
 
 # Preview deploys (`npm run deploy:preview`, at preview.jensen-design.pages.dev) use a bucket of
 # their own, so trying a change never touches his photos. Pages does not inherit these, so the
@@ -23,8 +25,8 @@ ACCESS_AUD = ""
 binding = "MEDIA"
 bucket_name = "jensen-design-media-preview"
 [env.preview.vars]
-ACCESS_TEAM = ""
-ACCESS_AUD = ""
+ACCESS_TEAM = "jensendesign"
+ACCESS_AUD = "0bcae1e511bb8c4dd3547447143cf257fe394f0f01c3d1a727ea85a90b5f29f7"
 
 # Contact-form messages to his phone: see functions/_lib/notify.js (NTFY_URL, or the TWILIO_* settings),
 # set as secrets with `npx wrangler pages secret put NAME`, never written here.
