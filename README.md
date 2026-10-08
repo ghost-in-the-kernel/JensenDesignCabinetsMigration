@@ -41,9 +41,12 @@ photos himself. Free on Cloudflare's free tier; the only cost left is the domain
    npx wrangler r2 bucket lifecycle add jensen-design-media delete-old-messages messages/ --expire-days 365
    python3 tools/upload_r2.py archive/r2
    npx wrangler pages project create jensen-design --production-branch main
-   npm run deploy
    ```
-   The site is then at https://jensen-design.pages.dev for him to review.
+   Then add `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as repository secrets on GitHub
+   (Settings, Secrets and variables, Actions): from then on every push to `main` deploys the site
+   (`.github/workflows/deploy.yml`; Actions, Deploy, Run workflow deploys without a push). The
+   site is then at https://jensen-design.pages.dev for him to review. (`npm run deploy` does the
+   same from a computer where `npx wrangler login` was done.)
 3. **Admin sign-in**: Cloudflare dashboard, Zero Trust, Access, Applications, Add, Self-hosted. Add
    the paths `jensen-design.pages.dev/admin` and `jensen-design.pages.dev/api/admin` (later the same
    two on jensendesigncabinets.com), with a policy that allows his email and yours. Put the team name
@@ -78,7 +81,8 @@ photos, galleries, settings and messages live in the R2 bucket, laid out as writ
 `functions/_lib/storage.js`. Deploying the code never touches the bucket. Images that belong to
 the code (the logos, in `public/img/`) are in git; his photos never are.
 
-- **Deploy a change**: `npm run deploy`. Safe at any time; his galleries are unaffected.
+- **Deploy a change**: push to `main` (GitHub deploys it), or `npm run deploy`. Safe at any time;
+  his galleries are unaffected.
 - **Try a change first**: `npm run deploy:preview` publishes it at preview.jensen-design.pages.dev
   with its own bucket (`jensen-design-media-preview`, created once with `npx wrangler r2 bucket
   create`; `python3 tools/upload_r2.py archive/r2 --preview` fills it), so nothing he sees or owns changes.

@@ -29,7 +29,7 @@ TYPES = {'.jpg': 'image/jpeg', '.png': 'image/png', '.mp4': 'video/mp4', '.json'
 GALLERIES = 'data/galleries.json'  # the layout is in functions/_lib/storage.js
 
 def request(method, key, body=None, ctype=None, query=''):
-    url = api + urllib.parse.quote(key) + query
+    url = (api + urllib.parse.quote(key) if key else api.rstrip('/')) + query  # the listing has no trailing slash
     headers = {'Authorization': f'Bearer {token}', **({'Content-Type': ctype} if ctype else {})}
     for attempt in range(8):
         try:
