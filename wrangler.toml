@@ -14,6 +14,9 @@ bucket_name = "jensen-design-media"
 ACCESS_TEAM = ""
 ACCESS_AUD = ""
 
+# Contact-form messages to his phone: see functions/_lib/notify.js (NTFY_URL, or the TWILIO_* settings),
+# set as secrets with `npx wrangler pages secret put NAME`, never written here.
+
 # Contact form by email, once the domain is on Cloudflare with Email Routing on and
 # jdesign@rmi.net verified as a destination. Until then messages are kept and shown in /admin.
 # [[send_email]]

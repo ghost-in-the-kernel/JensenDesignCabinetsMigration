@@ -191,6 +191,39 @@ ${list.map((m) => `<article class="card message" data-key="${esc(m.key.split('/'
   });
 }
 
+// ---- Settings: how he hears about new messages ----------------------------------------------
+
+async function settingsView() {
+  const { settings: s, channels: c, email } = await api('settings');
+  const phoneReady = c.push || c.text;
+  const notReady = '<p class="hint warn">Not set up yet on the website\'s side, so nothing will be sent this way until it is.</p>';
+  app.innerHTML = `<h1>Settings</h1>
+<form class="card" id="settings">
+  <h2>When someone sends a message from the website, tell me&hellip;</h2>
+  <label class="check"><input type="checkbox" name="notifyEmail" ${s.notifyEmail ? 'checked' : ''}> By email, to ${esc(email)}</label>
+  ${c.email ? '' : notReady}
+  <label class="check"><input type="checkbox" name="notifyPhone" ${s.notifyPhone ? 'checked' : ''}> On my phone${c.push && !c.text ? ' (a notification from the ntfy app)' : c.text ? ' (a text message)' : ''}</label>
+  ${phoneReady ? '' : notReady}
+  ${c.text ? `<label>My cell phone number <input name="phoneNumber" type="tel" value="${esc(s.phoneNumber)}" placeholder="(970) 555-1234"></label>` : ''}
+  <p class="hint">Every message is also kept here under Messages for a year, whatever you choose.</p>
+  <div class="buttons"><button class="big">Save</button><button type="button" id="test">Send me a test</button></div>
+</form>`;
+  const form = document.getElementById('settings');
+  form.onsubmit = (e) => {
+    e.preventDefault();
+    const f = new FormData(form), body = { notifyEmail: f.has('notifyEmail'), notifyPhone: f.has('notifyPhone') };
+    if (f.has('phoneNumber')) body.phoneNumber = f.get('phoneNumber');
+    act(() => api('settings', { method: 'PUT', body }), 'Saved.');
+  };
+  document.getElementById('test').onclick = async () => {
+    try {
+      const { results } = await api('settings/test', { method: 'POST' });
+      if (!results.length) toast('Nothing to send: no way of telling you is both chosen and set up.', true);
+      else toast(results.map((r) => `${r.how}: ${r.ok ? 'sent' : `failed (${r.error})`}`).join('; '), results.some((r) => !r.ok));
+    } catch (e) { toast(e.message, true); }
+  };
+}
+
 // ---- Routing ---------------------------------------------------------------------------------
 
 async function render() {
@@ -198,6 +231,7 @@ async function render() {
   try {
     if (view === 'gallery' && id) await galleryView(id);
     else if (view === 'messages') await messagesView();
+    else if (view === 'settings') await settingsView();
     else await listView();
   } catch (e) {
     app.innerHTML = `<p class="error">${esc(e.message)}</p>`;

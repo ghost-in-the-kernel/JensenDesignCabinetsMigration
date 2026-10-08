@@ -36,6 +36,7 @@ photos himself. Free on Cloudflare's free tier; the only cost left is the domain
 2. **Cloudflare** (`npm install`, then `npx wrangler login` once):
    ```
    npx wrangler r2 bucket create jensen-design-media
+   npx wrangler r2 bucket lifecycle add jensen-design-media delete-old-messages messages/ --expire-days 365
    tools/upload_r2.sh archive/r2
    npx wrangler pages project create jensen-design --production-branch main
    npm run deploy
@@ -50,7 +51,14 @@ photos himself. Free on Cloudflare's free tier; the only cost left is the domain
    them. Then the Pages project's Custom domains gets `jensendesigncabinets.com`,
    `www.jensendesigncabinets.com`, `telluridecabinets.com` and `www.telluridecabinets.com`.
    Allow up to 48 hours for the change to settle before cancelling Houzz.
-5. **After launch**: in Google Search Console, verify jensendesigncabinets.com (a DNS record,
+5. **Messages to his phone**: the contact form tells him by email (on by default) and, if he turns it
+   on in the admin page's Settings, on his phone, as Houzz did. Phone needs one of these set up.
+   Free push notification: he installs the ntfy app and subscribes to a long random topic name;
+   `npx wrangler pages secret put NTFY_URL` with `https://ntfy.sh/<that name>`. Or real text messages
+   through Twilio (a few dollars a month, after the carriers approve the business registration): the
+   `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM` and `NOTIFY_PHONE` secrets. Either way the
+   message is also in the admin page under Messages.
+6. **After launch**: in Google Search Console, verify jensendesigncabinets.com (a DNS record,
    one click on Cloudflare) and submit `https://jensendesigncabinets.com/sitemap.xml`. In his Google
    Business Profile, set the website to https://jensendesigncabinets.com. Optionally turn on Email
    Routing and the `send_email` lines in `wrangler.toml` so contact-form messages also arrive by

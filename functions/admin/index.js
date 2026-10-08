@@ -15,6 +15,7 @@ export function onRequestGet() {
   <nav>
     <a href="/admin#galleries">Galleries</a>
     <a href="/admin#messages">Messages</a>
+    <a href="/admin#settings">Settings</a>
     <a href="/" target="_blank">View the site</a>
     <a href="/cdn-cgi/access/logout">Sign out</a>
   </nav>

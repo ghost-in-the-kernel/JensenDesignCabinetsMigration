@@ -1,3 +1,15 @@
+/* Fonts served from this site (no Google Fonts, so visitors are not sent to Google). SIL Open Font License. */
+@font-face { font-family: 'Unna'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/unna-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Unna'; font-style: italic; font-weight: 400; font-display: swap; src: url('/fonts/unna-latin-400-italic.woff2') format('woff2'); }
+@font-face { font-family: 'Unna'; font-style: normal; font-weight: 700; font-display: swap; src: url('/fonts/unna-latin-700-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Unna'; font-style: italic; font-weight: 700; font-display: swap; src: url('/fonts/unna-latin-700-italic.woff2') format('woff2'); }
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/playfair-display-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Open Sans'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/open-sans-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Open Sans'; font-style: italic; font-weight: 400; font-display: swap; src: url('/fonts/open-sans-latin-400-italic.woff2') format('woff2'); }
+@font-face { font-family: 'Open Sans'; font-style: normal; font-weight: 700; font-display: swap; src: url('/fonts/open-sans-latin-700-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Open Sans'; font-style: normal; font-weight: 800; font-display: swap; src: url('/fonts/open-sans-latin-800-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Lato'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/lato-latin-400-normal.woff2') format('woff2'); }
+
 /* The look of the Houzz site, from its theme settings: black header and footer, gold titles,
    grey uppercase menu in Unna, Playfair Display titles, Unna body text. */
 :root {
@@ -102,6 +114,9 @@ a { color: inherit; }
 .social-links { list-style: none; display: flex; gap: 16px; padding: 0; margin: 16px 0; }
 .social-links a { color: var(--gold); }
 .map { width: 100%; height: 300px; border: 0; margin-top: 16px; }
+.map--off { display: grid; place-content: center; gap: 8px; padding: 24px; background: var(--grey-bg); text-align: center; font-size: 16px; }
+.map--off button { justify-self: center; font: 20px var(--body); color: #fff; background: var(--button); border: 0; padding: 8px 28px; cursor: pointer; }
+.map--off p { margin: 0; color: var(--grey-text); }
 .contact-form { display: grid; gap: 16px; }
 .contact-form label { display: grid; gap: 6px; font-family: var(--body); font-size: 18px; color: #000; }
 .contact-form input, .contact-form textarea { font: 16px var(--logo); color: #000; background: #fff; border: 1px solid #ccc; padding: 10px; width: 100%; }

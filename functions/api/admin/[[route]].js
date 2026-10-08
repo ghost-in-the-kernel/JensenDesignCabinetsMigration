@@ -1,4 +1,7 @@
 import { loadGalleries, saveGalleries } from '../../_lib/data.js';
+import { channels, loadSettings, saveSettings } from '../../_lib/settings.js';
+import { notifyOwner } from '../../_lib/notify.js';
+import { site } from '../../_lib/html.js';
 
 const json = (data, status = 200) => Response.json(data, { status, headers: { 'cache-control': 'no-store' } });
 const fail = (error, status = 400) => json({ error }, status);
@@ -133,6 +136,30 @@ async function route(request, env, parts) {
       if (!/^[\w-]+\.json$/.test(id)) throw new Problem('No such message.', 404);
       await env.MEDIA.delete(`messages/${id}`);
       return { deleted: id };
+    }
+  }
+
+  if (area === 'settings') {
+    const view = async (s) => ({ settings: s, channels: channels(env), email: site.contact.email });
+    if (!id && method === 'GET') return view(await loadSettings(env));
+    if (!id && method === 'PUT') {
+      const b = await body(), s = await loadSettings(env);
+      if ('notifyEmail' in b) s.notifyEmail = Boolean(b.notifyEmail);
+      if ('notifyPhone' in b) s.notifyPhone = Boolean(b.notifyPhone);
+      if ('phoneNumber' in b) {
+        const digits = String(b.phoneNumber).replace(/[^\d+]/g, '');
+        const e164 = digits.startsWith('+') ? digits : digits.length === 10 ? `+1${digits}` : digits.length === 11 && digits[0] === '1' ? `+${digits}` : '';
+        if (b.phoneNumber && !e164) throw new Problem('Please enter a 10-digit phone number.');
+        s.phoneNumber = e164;
+      }
+      await saveSettings(env, s);
+      return view(s);
+    }
+    if (id === 'test' && method === 'POST') {
+      const s = await loadSettings(env);
+      const results = await notifyOwner(env, { name: 'Test', email: site.contact.email, phone: '',
+        message: 'This is a test from the website admin. Messages from the contact form will look like this.' }, s);
+      return { results };
     }
   }
 

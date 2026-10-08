@@ -5,6 +5,13 @@ if (toggle) toggle.addEventListener('click', () => {
   toggle.setAttribute('aria-expanded', String(open));
 });
 
+// The Google map loads only when asked for: until then the visitor's browser never contacts Google.
+document.querySelectorAll('.map--off button').forEach((b) => b.addEventListener('click', () => {
+  const box = b.parentElement, frame = document.createElement('iframe');
+  frame.src = box.dataset.map; frame.title = box.dataset.title; frame.className = 'map';
+  box.replaceWith(frame);
+}));
+
 document.querySelectorAll('.slideshow').forEach((show) => {
   const slides = [...show.querySelectorAll('.slide')];
   if (!slides.length) return;
