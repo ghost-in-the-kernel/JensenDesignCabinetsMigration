@@ -41,7 +41,7 @@ jobs:
       - name: Check the live site
         if: steps.secrets.outputs.ok == 'yes'
         run: |
-          site=https://jensen-design.pages.dev
+          site=https://jensendesigncabinets.com
           sleep 20  # the new deployment takes a moment to reach the address
           fail=0
           check() { code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$site$1"); echo "$code $1"; [ "$code" = "$2" ] || fail=1; }
@@ -54,4 +54,5 @@ jobs:
           locked /admin                      # Cloudflare Access sends visitors to its sign-in page
           locked /api/admin/galleries
           check /media/data/galleries.json 404   # his data is never public
+          curl -s "$site/" | grep -q 'href="/admin" rel="nofollow">Owner login' && echo 'ok Owner login link' || { echo 'missing Owner login link'; fail=1; }
           exit $fail

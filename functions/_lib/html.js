@@ -105,7 +105,7 @@ ${body}
 <footer class="footer">
   ${contactBlock()}
   ${socialLinks()}
-  <p class="footer__links"><a href="/privacy">Privacy Policy</a></p>
+  <p class="footer__links"><a href="/privacy">Privacy Policy</a> &middot; <a href="/admin" rel="nofollow">Owner login</a></p>
 </footer>
 <script src="/site.js" defer></script>
 </body>
