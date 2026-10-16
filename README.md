@@ -58,13 +58,13 @@ photos himself. Free on Cloudflare's free tier; the only cost left is the domain
    `jensendesigncabinets.com`, `www.jensendesigncabinets.com`, `telluridecabinets.com` and
    `www.telluridecabinets.com`, and the Access application gets the two admin paths on
    jensendesigncabinets.com. Allow up to 48 hours for the change to settle before cancelling Houzz.
-5. **Contact-form email (required)**: his main way of hearing from the site. On the
-   jensendesigncabinets.com zone: Email, Email Routing, enable (it adds the records it needs; his own
-   mail is at Gmail, so nothing of his changes), and add `jensendesign1@gmail.com` as a destination address:
-   he must click the link in the email Cloudflare sends him. Then uncomment the `send_email` lines and
-   `MAIL_FROM` in `wrangler.toml`, `npm run deploy`, and press "Send me a test" in the admin's
-   Settings. Every notice comes from `website@jensendesigncabinets.com` with the subject "Website
-   message from <name>", so one rule in his inbox files them all; replying answers the sender.
+5. **Contact-form email (done Oct 2026)**: Email Routing is on for jensendesigncabinets.com and
+   `jensendesign1@gmail.com` is its verified destination. Pages cannot send email, so the small
+   Worker in `mailer/` does (no public address; it can only send to that inbox), and the site calls
+   it through the `MAILER` service binding. The deploy workflow deploys it too. Every notice comes
+   from `website@jensendesigncabinets.com` with the subject "Website message from <name>", so one
+   rule in his inbox files them all; replying answers the sender. To change his address: verify the
+   new one in Email Routing, then change it in `mailer/wrangler.toml` (both places).
 6. **Phone notices (optional)**: he can also turn on phone notices in Settings, once a channel is
    set up. Free push notification: he installs the ntfy app and subscribes to a long random topic
    name; `npx wrangler pages secret put NTFY_URL` with `https://ntfy.sh/<that name>`. (Real text

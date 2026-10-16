@@ -33,6 +33,12 @@ jobs:
           cache: npm
       - if: steps.secrets.outputs.ok == 'yes'
         run: npm ci
+      - name: Deploy the mailer Worker (sends contact-form notices; the site calls it)
+        if: steps.secrets.outputs.ok == 'yes'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        working-directory: mailer
+        run: npx wrangler deploy
       - name: Deploy to Cloudflare Pages
         if: steps.secrets.outputs.ok == 'yes'
         env:

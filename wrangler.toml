@@ -31,9 +31,8 @@ ACCESS_AUD = "0bcae1e511bb8c4dd3547447143cf257fe394f0f01c3d1a727ea85a90b5f29f7"
 # Contact-form messages to his phone: see functions/_lib/notify.js (NTFY_URL, or the TWILIO_* settings),
 # set as secrets with `npx wrangler pages secret put NAME`, never written here.
 
-# Contact-form email to him (README step 5): uncomment once the domain is on Cloudflare with Email
-# Routing on and jensendesign1@gmail.com verified as a destination. Until then messages are kept in /admin.
-# [[send_email]]
-# name = "MAILER"
-# destination_address = "jensendesign1@gmail.com"
-# MAIL_FROM = "website@jensendesigncabinets.com"   (goes under [vars])
+# Contact-form email to him: Pages cannot send email, so the site asks the mailer Worker
+# (mailer/, deployed on its own) through this service binding. It sends only to his verified inbox.
+[[services]]
+binding = "MAILER"
+service = "jensen-design-mailer"

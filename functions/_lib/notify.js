@@ -2,8 +2,8 @@
 // by email (on unless he turns it off; his main way, he files them into inbox folders, so the sender
 // and subject stay the same every time) and to his phone (off unless he turns it on).
 //
-// Email: Cloudflare Email Routing, once the domain is on Cloudflare; the send_email binding MAILER
-// and MAIL_FROM in wrangler.toml.
+// Email: the mailer Worker (mailer/), bound as MAILER in wrangler.toml, through Cloudflare Email
+// Routing to his verified inbox.
 // Phone, either way, set as secrets (`npx wrangler pages secret put NAME`):
 // - Push notification through the free ntfy app: NTFY_URL = https://ntfy.sh/<a long random topic name>,
 //   and he subscribes to that topic in the app.
@@ -11,7 +11,6 @@
 //   number); the number to text is his, in Settings. US texting needs a one-time business
 //   registration with the carriers before it is delivered.
 // A notice that fails is logged and nothing else: the message itself is already saved for /admin.
-import { site } from './html.js';
 import { channels, loadSettings } from './settings.js';
 
 export function notice(m) {
@@ -21,16 +20,12 @@ export function notice(m) {
 }
 
 async function email(env, m) {
-  const { EmailMessage } = await import('cloudflare:email');
-  const clean = (s) => s.replace(/[\r\n]+/g, ' ');
-  const raw = [
-    `From: Jensen Design website <${env.MAIL_FROM}>`, `To: ${site.contact.email}`,
-    `Reply-To: ${clean(m.email)}`, `Subject: Website message from ${clean(m.name)}`,
-    `Message-ID: <${crypto.randomUUID()}@${env.MAIL_FROM.split('@')[1]}>`, `Date: ${new Date().toUTCString()}`,
-    'MIME-Version: 1.0', 'Content-Type: text/plain; charset=utf-8', '',
-    `Name: ${m.name}`, `Email: ${m.email}`, `Phone: ${m.phone || '-'}`, '', m.message,
-  ].join('\r\n');
-  await env.MAILER.send(new EmailMessage(env.MAIL_FROM, site.contact.email, raw));
+  // The mailer Worker (mailer/) does the sending; Pages cannot.
+  const r = await env.MAILER.fetch('https://mailer/send', {
+    method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ name: m.name, email: m.email, phone: m.phone, message: m.message }),
+  });
+  if (!r.ok) throw new Error(`mailer answered ${r.status}: ${await r.text()}`);
 }
 
 async function push(env, m) {

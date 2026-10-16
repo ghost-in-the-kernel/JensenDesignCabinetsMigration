@@ -16,7 +16,7 @@ export async function saveSettings(env, settings) {
 /** Which ways of telling him are set up on Cloudflare (secrets and bindings), whatever he chose. */
 export function channels(env) {
   return {
-    email: Boolean(env.MAILER && env.MAIL_FROM),
+    email: Boolean(env.MAILER),
     push: Boolean(env.NTFY_URL),
     text: Boolean(env.TWILIO_ACCOUNT_SID && env.TWILIO_AUTH_TOKEN && env.TWILIO_FROM),
   };

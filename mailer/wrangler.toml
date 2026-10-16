@@ -1,0 +1,16 @@
+# The mailer: sends contact-form notices to his verified inbox. Cloudflare Pages cannot send email
+# itself, so the site calls this Worker through a service binding (MAILER in ../wrangler.toml).
+# It has no public address (workers_dev = false), and can only send to the one verified address.
+name = "jensen-design-mailer"
+main = "index.js"
+compatibility_date = "2025-09-01"
+workers_dev = false
+preview_urls = false
+
+[[send_email]]
+name = "SEND"
+destination_address = "jensendesign1@gmail.com"
+
+[vars]
+MAIL_FROM = "website@jensendesigncabinets.com"
+MAIL_TO = "jensendesign1@gmail.com"
