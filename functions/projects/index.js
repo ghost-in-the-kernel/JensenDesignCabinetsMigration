@@ -15,5 +15,5 @@ export async function onRequestGet({ env }) {
 <p class="intro">Custom kitchens, baths, bars, closets and whole-home cabinetry we designed and built in ${AREA}.</p>
 <div class="projects">${tiles}</div>`;
   return html(page({ title: 'Projects: Custom Cabinetry in Telluride, CO', path: '/projects', body,
-    description: `Photos of ${data.galleries.length} custom cabinetry projects by Jensen Design: kitchens, bathroom vanities, bars, closets and whole homes in ${AREA}.` }));
+    description: `Photos of ${data.galleries.length} custom cabinetry projects: kitchens, vanities, bars, closets and whole homes in Telluride, Mountain Village and Montrose, CO.` }));
 }

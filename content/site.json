@@ -22,7 +22,7 @@
   "services": "We design and build high-end custom cabinetry for the whole house: kitchens, bathroom vanities, bars, closets and built-ins, plus trim packages and custom furniture, working with builders, architects, designers and homeowners in Telluride, Mountain Village and Montrose, Colorado."
  },
  "seoTitle": "Jensen Design | Custom Cabinetry in Telluride & Montrose, CO",
- "seoDescription": "Jensen Design designs and builds high-end custom cabinetry for the whole house: kitchens, baths, closets, trim packages and custom furniture, for homes in Telluride, Mountain Village and Montrose, Colorado.",
+ "seoDescription": "Jensen Design designs and builds high-end custom cabinetry for kitchens, baths, closets and whole homes in Telluride, Mountain Village and Montrose, CO.",
  "about": [
   "We work with builders, architects, designers and homeowners to design and build high-end cabinetry for the whole house. Our design and finish flexibility ensures that the whole house feels like a home, like everything fits just right. In addition to custom cabinetry, we also provide trim packages and custom furniture.",
   "Jensen Design helps your home accentuate your distinctive lifestyle with luxurious and superbly functional cabinetry for every room. Cabinetry for each home is meticulously designed and built maintaining a direct and personal relationship with homeowner, architect, and contractor. This ensures that individual needs and style preferences are thoroughly woven into our cabinetry, down to the most intricate detail.",
@@ -66,5 +66,10 @@
   "projects": "site/c561ddf20f4411d1",
   "about": "site/b8d167220b1167fd",
   "contact": "site/fa51f77a0b11679e"
+ },
+ "googleMaps": "https://maps.google.com/?cid=11224767507903016941",
+ "geo": {
+  "latitude": 38.4938449,
+  "longitude": -107.898144
  }
 }

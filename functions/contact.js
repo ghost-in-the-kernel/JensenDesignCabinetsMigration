@@ -36,8 +36,8 @@ function render(formHtml, status = 200) {
     </div>
   </div>
 </section>`;
-  return html(page({ title: 'Contact Jensen Design', path: '/contact', body,
-    description: `Contact Jensen Design about custom cabinetry: ${site.contact.formattedPhone}, ${site.contact.email}, ${site.contact.formattedAddress}.` }),
+  return html(page({ title: 'Contact Us', path: '/contact', body,
+    description: `Talk to Jensen Design about custom cabinetry: call ${site.contact.formattedPhone} or ${site.contact.cellPhone}, or email ${site.contact.email}. Montrose, CO.` }),
   status, { 'cache-control': 'no-store' });
 }
 

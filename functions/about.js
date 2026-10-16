@@ -16,5 +16,5 @@ export async function onRequestGet() {
   <h2 class="title-2">TESTIMONIALS</h2>
   <div class="reviews">${reviews}</div>
 </section>`;
-  return html(page({ title: 'About Jensen Design: Custom Cabinetmakers', path: '/about', body, description: site.about[0] }));
+  return html(page({ title: 'About: Custom Cabinetmakers in Western Colorado', path: '/about', body, description: site.about[0] }));
 }

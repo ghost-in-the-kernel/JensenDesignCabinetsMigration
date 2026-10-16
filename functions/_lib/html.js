@@ -55,6 +55,13 @@ export function hero(title, key, size = 'standard') {
   return `<section class="hero hero--${size}"${bg}><div class="hero__shade"></div><h1 class="title-1">${esc(title)}</h1></section>`;
 }
 
+/** A search-result description: Google shows about 155 characters, so longer text is cut at a word. */
+export function snippet(text, max = 155) {
+  const t = String(text ?? '').replace(/\s+/g, ' ').trim();
+  if (t.length <= max) return t;
+  return `${t.slice(0, max - 1).replace(/[\s,;:.-]+\S*$/, '')}…`;
+}
+
 /** Who he is, for search engines: the business, where it is, what it does and where. */
 export function business() {
   const [street, city, rest] = site.contact.formattedAddress.split(', ');
@@ -64,10 +71,13 @@ export function business() {
     name: site.name, legalName: site.legalName, url: `${ORIGIN}/`, logo: `${ORIGIN}/img/logo-square.png`,
     image: `${ORIGIN}/img/logo.jpg`, description: site.seoDescription,
     telephone: site.contact.formattedPhone, email: site.contact.email,
+    ...(site.contact.cellPhone ? { contactPoint: [{ '@type': 'ContactPoint', telephone: site.contact.cellPhone, contactType: 'customer service', name: 'Cell' }] } : {}),
+    ...(site.geo ? { geo: { '@type': 'GeoCoordinates', ...site.geo } } : {}),
+    ...(site.googleMaps ? { hasMap: site.googleMaps } : {}),
     address: { '@type': 'PostalAddress', streetAddress: street, addressLocality: city, addressRegion: region, postalCode, addressCountry: 'US' },
     areaServed: ['Telluride, CO', 'Mountain Village, CO', 'Montrose, CO', 'Ridgway, CO', 'Ouray, CO', 'San Miguel County, CO'].map((name) => ({ '@type': 'Place', name })),
     knowsAbout: ['Custom cabinetry', 'Kitchen cabinets', 'Bathroom vanities', 'Closets', 'Built-ins', 'Trim packages', 'Custom furniture'],
-    sameAs: Object.values(site.social),
+    sameAs: [...Object.values(site.social), ...(site.googleMaps ? [site.googleMaps] : [])],
   };
 }
 
@@ -76,7 +86,7 @@ export function page({ title, path, canonical = path, body, description = '', im
   const nav = NAV.map(([href, label]) =>
     `<li><a class="nav__link${href === path ? ' nav__link--active' : ''}" href="${href}">${esc(label)}</a></li>`).join('');
   const fullTitle = title === site.name ? site.seoTitle : `${title} | ${site.name}`;
-  const desc = (description || site.seoDescription).replace(/\s+/g, ' ').slice(0, 300);
+  const desc = snippet(description || site.seoDescription);
   const img = image ? new URL(image, ORIGIN).toString() : `${ORIGIN}/img/logo.jpg`;
   return `<!doctype html>
 <html lang="en">
