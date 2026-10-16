@@ -60,7 +60,7 @@ photos himself. Free on Cloudflare's free tier; the only cost left is the domain
    jensendesigncabinets.com. Allow up to 48 hours for the change to settle before cancelling Houzz.
 5. **Contact-form email (required)**: his main way of hearing from the site. On the
    jensendesigncabinets.com zone: Email, Email Routing, enable (it adds the records it needs; his own
-   mail is at rmi.net, so nothing of his changes), and add `jdesign@rmi.net` as a destination address:
+   mail is at Gmail, so nothing of his changes), and add `jensendesign1@gmail.com` as a destination address:
    he must click the link in the email Cloudflare sends him. Then uncomment the `send_email` lines and
    `MAIL_FROM` in `wrangler.toml`, `npm run deploy`, and press "Send me a test" in the admin's
    Settings. Every notice comes from `website@jensendesigncabinets.com` with the subject "Website

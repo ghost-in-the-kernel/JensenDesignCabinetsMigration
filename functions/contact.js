@@ -23,7 +23,7 @@ function render(formHtml, status = 200) {
   <div class="columns">
     <div>
       <h2 class="title-2">${esc(site.legalName)}</h2>
-      ${contactBlock()}
+      ${contactBlock({ cell: true })}
       ${socialLinks()}
       <div class="map map--off" data-map="${esc(map)}" data-title="Map of ${esc(site.mapAddress)}">
         <button type="button">Show map</button>

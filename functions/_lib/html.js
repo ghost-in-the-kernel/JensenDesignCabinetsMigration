@@ -28,12 +28,19 @@ const ICONS = {
 };
 export const icon = (name) => `<svg viewBox="0 0 24 24" aria-hidden="true" class="icon">${ICONS[name] || ''}</svg>`;
 
-export function contactBlock() {
+const tel = (n) => `tel:${n.replace(/[^\d+]/g, '')}`;
+
+/** Address, phone and email; with cell: true (the Contact page) his cell too, each phone labelled. */
+export function contactBlock({ cell = false } = {}) {
   const c = site.contact;
+  const phones = cell && c.cellPhone
+    ? `<a href="${esc(tel(c.formattedPhone))}">${icon('phone')}<span>Office ${esc(c.formattedPhone)}</span></a>
+    <a href="${esc(tel(c.cellPhone))}">${icon('phone')}<span>Cell ${esc(c.cellPhone)}</span></a>`
+    : `<a href="${esc(tel(c.formattedPhone))}">${icon('phone')}<span>${esc(c.formattedPhone)}</span></a>`;
   const map = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.formattedAddress)}`;
   return `<address class="contact-block">
     <a href="${esc(map)}" target="_blank" rel="noopener">${icon('address')}<span>${esc(c.formattedAddress)}</span></a>
-    <a href="tel:${esc(c.formattedPhone.replace(/[^\d+]/g, ''))}">${icon('phone')}<span>${esc(c.formattedPhone)}</span></a>
+    ${phones}
     <a href="mailto:${esc(c.email)}">${icon('email')}<span>${esc(c.email)}</span></a>
   </address>`;
 }
